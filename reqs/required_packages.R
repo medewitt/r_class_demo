@@ -18,3 +18,12 @@ if(!require("haven", character.only = T)) {
   library(haven)
 }
 
+#sjlabelled to handle labels in SPSS Files
+
+if(!require("sjlabelled", character.only = T)) {
+  install.packages("sjlabelled")
+  library("sjlabelled")
+} else{
+  library(sjlabelled)
+}
+
