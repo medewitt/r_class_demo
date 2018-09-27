@@ -27,3 +27,11 @@ if(!require("sjlabelled", character.only = T)) {
   library(sjlabelled)
 }
 
+#usethis to read more file formats
+
+if(!require("usethis", character.only = T)) {
+  install.packages("usethis")
+  library("usethis")
+} else{
+  library(usethis)
+}
