@@ -86,7 +86,7 @@ It appears that each subject appears in multiple rows with repeating attributes 
 Thus we want to spread *measurement* (which will make new column names) and then have the values in these new columns be those values in the *value* column. 
 
 ```{r}
-health_wide %>% 
+health_long %>% 
   spread(key = measurement, value = value)
 ```
 
@@ -94,7 +94,7 @@ health_wide %>%
 
 Read in the `heights.dta` file. This file contains data on some physical attributes and earnings of subjects in a study.
 
-Hint: you will need to use the `haven` package. Put 
+Hint: you will need to use the `haven` package. Put the data into a tidy format. You will note that it is currently in a `long` format.
 
 ## read in the data
 
@@ -105,9 +105,83 @@ heights_raw <- read_****("data/")
 
 ## tidy it
 
+Long -> Wide
+
 ```{r}
 heights_raw %>% 
   verb()
 ```
 
 # Exercise 2
+
+Read in the `gapminder.sav` data set and collapse all the metrics for life expectancy, population and GDP per Population into two columns one for `parameter_name` and the other for `value`.
+
+```{r}
+gapminder<-read_****("data/gapminder.sav")
+```
+
+Hint: you will need to use the `-group_1, -group_2, etc` syntax to not collapse the grouping variables that you wish to keep. 
+
+```{r}
+gapminder %>% 
+  verb()
+```
+
+
+# Excerise 3
+
+Using `select` to subset
+
+From the `gapminder` data set that you already read into memory, select the "year" and "pop" columns
+
+```{r}
+gapminder
+```
+
+
+# Excerise 4
+
+Use the `unite` function to combine "year" and "country" into one column called country_year with values separated by a "-". Save this into an object called "unite_demo."
+
+```{r}
+
+```
+
+# Exercise 5
+
+Now convert this new data set back into the "year" and "country" columns using `separate`.
+
+```{r}
+
+```
+
+
+# Exercise 6
+
+Now let's return to the `gap_narrow` dataset and filter the "year" field for values for "1977" only using the `filter` function and the `==` operator
+
+```{r}
+
+```
+
+# Bonus
+
+Using the `gap_narrow` dataset let's print the row with the maximum population.
+
+
+# Excerise 7
+
+Let's combine a few operations together using the pipe `%>%`.
+
+- Take the "health_long" data set
+
+- `spread` to a tidy format
+
+- `rename` the "subject" column to "subject_id"
+
+- use `mutate` to create a value for total cholesterol (e.g. total_cholesterol = lhl + hdl)
+
+```{r}
+health_long
+```
+
