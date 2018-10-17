@@ -1,0 +1,138 @@
+---
+title: "Dates and Times"
+author: "Michael DeWitt"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+# Introduction
+
+The purpose of this exercise is to explore some of the functionality of the `lubridate` package to help us handle dates and times with easy.
+
+# Packages
+
+LEt's call our required packages. In addition to the `tidyverse` we will need to use the `lubridate` package.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+
+# Dealing With Dates
+
+Dates often arrive in different formats (because few people realise that there are [ISO standards](https://en.wikipedia.org/wiki/ISO_8601) for dates). 
+
+## Some Traditional Formats
+
+1. YYYY-MM-DD
+
+1. MM-DD-YYYY
+
+1. MM/DD/YYYY
+
+
+Let's make some examples dates:
+```{r}
+date_1 <- "2010-10-20"
+
+date_2 <- "11-05-1998"
+
+date_3 <- "11/05/1998"
+
+date_4 <- "1/05/2013"
+```
+
+
+### Parsing Each Date
+
+YYYY-MM-DD is by far the easiest date representation (because it is the ISO standard format). Let's use the `ymd` function from lubridate to convert this object into a date.
+
+```{r}
+date_1 <- ymd(date_1)
+```
+
+Now let's check if it worked!
+
+```{r}
+class(date_1)
+```
+
+It did! Yay!
+
+Now Let's Try a few others
+
+```{r}
+
+```
+
+And Check
+
+```{r}
+class(date_2)
+```
+
+```{r}
+
+```
+
+And Check
+
+```{r}
+class(date_2)
+```
+
+
+# Parsing Pieces of Dates
+
+Let's practice parsing our dates. 
+
+The functions we want to practice are:
+
+`day`
+`wday`
+`month`
+`week`
+`year`
+
+Let's Parse
+
+First we need to convert our "date" column into a date type column
+
+```{r}
+lakers
+
+```
+
+Now that we have done that, let's Retrive the components
+
+```{r}
+
+```
+
+Then lets add the months, days and years
+
+```{r}
+
+```
+
+Now let's use our data summarisation tools and see the average points by day of the week by month!
+
+```{r}
+
+```
+
+
+# Now on to Time
+
+Let's add a time column to our data set
+
+
+# Now let's calculate some intervals...
+
+
