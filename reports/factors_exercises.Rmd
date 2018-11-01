@@ -1,0 +1,175 @@
+---
+title: "Demonstraining Factors"
+author: "Michael DeWitt"
+date: "11/1/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(forcats)
+```
+
+# Introducing Forcats
+
+`forcats` is a package that is designed to mke working with factors (if not fun) easy
+
+Factors provide us with a way for handling categorical variables
+
+Additionally, factors make graphing data easier (especially in regards to ordering values)
+
+# Quick Aside
+
+There are some nice templates available for graphing from the `papaja`package. These are APA templates. Go ahead and install them if you are interested. 
+
+```{r eval=FALSE}
+devtools::install_github("crsh/papaja")
+```
+
+# Brining in the Data
+
+```{r}
+gss_cat
+```
+
+
+# Doing Some Modeling
+
+## The Formula Syntax
+
+R uses a specific formula syntax for building models.
+
+`Depedent Variable ~ Indepedent Variable`
+
+This syntax is generally consistent across all modeling functions (exceptions include some tree based methods)
+
+We can add main effects with a `+` and internation effects with `:`. We can expand indepdent variables to include main and interaction effects with `*` (e.g. ($predictor1*predictor2 = predictor1 + predictor2 + predictor1*predictor2$))
+
+## A Linear Model
+$$tvhours = \beta_1*tvhours + \beta_2*partyid + \alpha + \epsilon$$
+
+```{r}
+fit_1 <- lm(age ~ tvhours + partyid, data = gss_cat)
+```
+
+## Now Let's Examine The Output
+
+`summary` will return some of the summary statistics for our model fit
+
+```{r}
+summary(fit_1)
+```
+
+Yuck! 
+
+## Let's use some of `forcats` functions
+
+Reduce partyid to 3 categories?
+
+```{r}
+
+```
+
+## Simplified Linear Fit
+
+```{r}
+
+```
+
+
+## Now Some Generalised Linear Modeling
+
+Here we can specify the generalised linear model family we want to use in the `glm` function with the `family` argument. If we don't specify a family it will use the default of `gaussian` or a basic linear regression.
+
+```{r}
+
+```
+
+
+```{r}
+
+```
+
+
+## Now some hierarchical modeling
+
+```{r}
+library(lme4)
+```
+
+
+```{r}
+
+```
+
+
+# Dealing with external data
+
+Now an example where we get an `sav` file from NORC for the actual GSS. In this example you will see that it comes in with numbers rather than the labels. This can be problematic.
+
+```{r}
+library(haven)
+# Purpose: import data from 2016 GSS and format for R
+
+url <- "http://users.wfu.edu/dewittme/data/sample/GSS2016.sav"
+
+# Read Raw Data
+raw_data <-read_spss(url)
+```
+
+Uh oh...
+
+```{r}
+head(raw_data)
+```
+
+But what does this <s3: labelled> mean???
+
+```{r}
+attributes(raw_data$MAR1)
+```
+
+```{r}
+clean_data_1 <- labelled::to_factor(raw_data)
+clean_data_1 %>% head()
+```
+
+```{r eval=FALSE}
+library(codebook)
+codebook::codebook(raw_data)
+```
+
+# Graphing
+
+```{r}
+library(papaja)
+gss_cat %>% 
+  ggplot(aes(rincome))+
+  geom_bar()+
+  labs(
+    title = "Missing Income Data Is High",
+    subtitle = "How does this effect our conclusions?",
+    caption = "Data: General Social Survey",
+    x= "income",
+    y = "count"
+  )+
+  theme_apa()+
+  coord_flip()
+```
+
+```{r}
+gss_cat %>% 
+  mutate(relig = fct_lump(relig, n = 5)) %>% # Lump into five categories
+  mutate(relig = fct_inorder(relig)) %>%  # Reorder from most to least
+  ggplot(aes(relig, tvhours))+
+  geom_jitter()+
+  labs(
+    title = "Missing Income Data Is High",
+    subtitle = "How does this effect our conclusions?",
+    caption = "Data: General Social Survey",
+    x= "income",
+    y = "count"
+  )
+```
+
