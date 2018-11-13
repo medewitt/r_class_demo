@@ -27,7 +27,7 @@ There are some nice templates available for graphing from the `papaja`package. T
 devtools::install_github("crsh/papaja")
 ```
 
-# Bringing in the Data
+# Brining in the Data
 
 ```{r}
 gss_cat
@@ -44,10 +44,10 @@ R uses a specific formula syntax for building models.
 
 This syntax is generally consistent across all modeling functions (exceptions include some tree based methods)
 
-We can add main effects with a `+` and internation effects with `:`. We can expand indepdent variables to include main and interaction effects with `*` (e.g. ($predictor1*predictor2 = predictor1 + predictor2 + predictor1:predictor2$))
+We can add main effects with a `+` and internation effects with `:`. We can expand indepdent variables to include main and interaction effects with `*` (e.g. ($predictor1*predictor2 = predictor1 + predictor2 + predictor1*predictor2$))
 
 ## A Linear Model
-$$age = \beta_1*tvhours + \beta_2*partyid + \alpha + \epsilon$$
+$$tvhours = \beta_1*tvhours + \beta_2*partyid + \alpha + \epsilon$$
 
 ```{r}
 fit_1 <- lm(age ~ tvhours + partyid, data = gss_cat)
@@ -60,9 +60,6 @@ fit_1 <- lm(age ~ tvhours + partyid, data = gss_cat)
 ```{r}
 summary(fit_1)
 ```
-```{r}
-levels(gss_cat$partyid)
-```
 
 Yuck! 
 
@@ -71,24 +68,13 @@ Yuck!
 Reduce partyid to 3 categories?
 
 ```{r}
-gss_2 <- gss_cat %>% 
-  mutate(partyid_red = fct_lump(partyid, n = 2)) %>% 
-  select(partyid_red, everything())
 
-gss_2
 ```
-
-```{r}
-gss_2 %>% 
-  count(partyid_red)
-```
-
 
 ## Simplified Linear Fit
 
 ```{r}
-fit_2 <- lm(age ~ tvhours + partyid_red, data = gss_2)
-summary(fit_2)
+
 ```
 
 
@@ -97,25 +83,12 @@ summary(fit_2)
 Here we can specify the generalised linear model family we want to use in the `glm` function with the `family` argument. If we don't specify a family it will use the default of `gaussian` or a basic linear regression.
 
 ```{r}
-gss_3 <- gss_cat %>% 
-  mutate(married = ifelse(marital == "Married", 1, 0)) %>%
-  mutate(partyid = fct_collapse(partyid,
-    Dem = c("Not str democrat", "Strong democrat"),
-    Rep = c("Not str republican", "Strong republican"),
-    Ind = c("Ind,near rep", "Ind,near dem", "Independent")
-  )) %>% 
-  select(married, everything()) %>% 
-  filter(partyid %in% c("Rep", "Dem", "Ind"))
+
 ```
 
 
 ```{r}
-fit_3 <- glm(married ~ partyid + age*tvhours, data = gss_3, family = "binomial")
 
-summary(fit_3)
-
-exp(coef(fit_3))
-help("glm")
 ```
 
 
@@ -127,16 +100,9 @@ library(lme4)
 
 
 ```{r}
-fit_4 <- glmer(married ~ partyid + age*tvhours + (1|relig), data = gss_3, family = "binomial")
+
 ```
 
-```{r}
-summary(fit_4)
-```
-
-```{r}
-ranef(fit_4)
-```
 
 # Dealing with external data
 
@@ -197,7 +163,7 @@ gss_cat %>%
   mutate(relig = fct_lump(relig, n = 5)) %>% # Lump into five categories
   mutate(relig = fct_inorder(relig)) %>%  # Reorder from most to least
   ggplot(aes(relig, tvhours))+
-  geom_col()+
+  geom_jitter()+
   labs(
     title = "Missing Income Data Is High",
     subtitle = "How does this effect our conclusions?",
@@ -205,6 +171,5 @@ gss_cat %>%
     x= "income",
     y = "count"
   )
-help("fct_inorder")
 ```
 
