@@ -149,6 +149,13 @@ There are several built in "themes" that can be used to control some of the othe
 
 ```
 
+Additionally, others have made themes for us to use. For example `ggthemes` has many familiar templates. Additionally, [`papaja`]() even has an `theme_apa` to make APA compliant graphs.
+
+```{r}
+library(papaja)
+
+```
+
 
 Or we can manipulate the theme directly through `theme`.
 
@@ -174,3 +181,78 @@ Now we can add another aesthetic element, colouring by a feature of our dataset 
 
 ```
 
+# A Second Examples
+
+Let's do some additional analysis with our General Social Survey Data Set.
+
+```{r}
+library(haven)
+url <- "http://users.wfu.edu/dewittme/data/sample/GSS2016.sav"
+
+# Read Raw Data
+raw_data <-read_spss(url)
+```
+
+I want to subset the data
+
+```{r}
+library(labelled)
+my_subset <- raw_data %>% 
+  select(MAR1, AGE, WORKHARD, YEAR) %>%
+  mutate_at(vars(MAR1, WORKHARD), labelled::to_factor)
+
+
+```
+
+Let's Visualise a few things in our data
+
+```{r}
+(p1 <- my_subset %>% 
+  ggplot(aes(MAR1))+
+  geom_bar(fill = "#9E7E38")+
+  labs(
+    title = "Marital Status for Person 1",
+    caption = "Data: General Social Survey",
+    x = NULL
+  )+
+  theme_minimal())
+```
+
+Now let's look at data groups
+
+```{r}
+(p2 <- my_subset %>% 
+  mutate(WORKHARD_num = as.numeric(WORKHARD)) %>% 
+  ggplot(aes(MAR1, WORKHARD_num))+
+  stat_summary(fun.data = "mean_cl_boot")+
+  labs(
+    title = "Mean Response for Working Hard",
+    subtitle = "With Boostrapped CIs",
+    caption = "Data: GSS",
+    x = NULL,
+    y = "Opinion of Hard Work (1-5)"
+  )+
+  theme_minimal())
+```
+
+Now we can put these plots together using `cowplot`
+
+```{r}
+library(cowplot)
+
+plot_grid(p1, p2, labels = c("A", "B"), nrow = 2)
+
+```
+
+Or if you wanted to get more fancy
+
+```{r}
+ggdraw() +
+  draw_plot(p1 + 
+              theme(legend.justification = "bottom"),
+            0, 0, 1, 1) +
+  draw_plot(p2  + theme(legend.justification = "top"),
+            0.4, 0.52, 0.6, 0.4)
+```
+
+There is much more documentation on this package [here](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html)
