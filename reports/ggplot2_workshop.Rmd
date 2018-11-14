@@ -64,14 +64,113 @@ ggplot()
 
 ## Aesthetics
 
+Note that we can pipe (`%>%`) into `ggplot2`. This can be handy when we need to do some data wrangling/ munging before we graph.
+
+```{r}
+diamonds %>% 
+  ggplot( data = , aes(x = , y = ))
+```
+
+_Aside_
+
+Note that we can specify `aes` outside of the ggplot2 object with something like
+
+```{r}
+ggplot(mtcars)+
+  aes(x = mpg, y = cyl)
+```
+
+
 ## Layers
+
+### Geoms
+
+Layers are the `geoms` and `stats` to which we can map out aesthetics. There are tons of options of which we cannot cover in this overview. See [geoms](https://ggplot2.tidyverse.org/reference/#section-layer-geoms) and [stats](https://ggplot2.tidyverse.org/reference/#section-layer-stats) for more details.
+
+Let's make an x-y scatterplot with `geom_point`. Note that to add a component to a `ggplot2` item we use the `+` operator. There is a long history about why this is the case but it is important to remember.
+
+```{r}
+diamonds %>% 
+  ggplot( data = , aes(x = , y = ))+
+  geom_
+
+```
+
+And let's change the transparency on the points given that we have a lot of overlap. This will help us see the density of our data.
+
+```{r}
+
+
+```
+
+### Stats
+
+Now let's add a linear regression line to the graph. For simplicity as well, let's save it to an object called `p`. We can continue to add components to `p` without having to rewrite our code each time. This is a very handy feature that separates `ggplot2` from the base plotting tools.
+
+```{r}
+
+```
+
 
 ## Scales
 
+`scale` can help us to change the scales of our axes. Using these features we don't have to change our data before plotting it. This is very nice when dealing with log scales or percents.
+
+Let's make the x and y axes on the log scale.
+
+```{r}
+p+
+  scale_
+```
+
+
 ## Facets
+
+Now we add facets to our data. Facets create the "small multiple"[^3]
+
+[^3]: See this [link](https://en.wikipedia.org/wiki/Small_multiple) for more details. We can use the `fact_` to add these facets.
+
+```{r}
+
+```
 
 ## Theme Elements
 
+First we need to add titles to our graph. We can do this with the `labs` function within `ggplot2`
+
+```{r}
+
+```
+
+
+There are several built in "themes" that can be used to control some of the other graph details (background colours, grids, line colours, etc). We can add the defaults using `theme_`
+
+```{r}
+
+```
+
+
+Or we can manipulate the theme directly through `theme`.
+
+```{r}
+
+```
+
+
+## And We Can Keep Iterating!
+
+Now we can add another aesthetic element, colouring by a feature of our dataset and everything works!
+
+```{r}
+
+```
+
+
 ## Saving
 
+`ggsave` can be used to save the `ggplot2` object.
+
+```{r}
+
+```
 
