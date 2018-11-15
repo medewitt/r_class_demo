@@ -1,0 +1,258 @@
+---
+title: "ggplot2"
+author: "Michael DeWitt"
+date: "11/13/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction to `ggplot2`
+
+This is a follow-along guide for the slides in the presentation.
+
+# ggplot2
+
+`ggplot2` is an implementation of the [Grammar of Graphics](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448). It is not a guide on what makes a _good_ graphic, but rather a philosophy of building statistical graphics. The grammar proposes components that are common to all statistical graphics:
+
+* **data** - what data are you trying to plot
+
+* **mappings** - what aesthic mapping are you trying to plot
+
+* **layers**
+  * geometries - bars, lines, points, etc
+  * statistics - statistical summaries of the data (e.g. counts)
+  
+* **scales** - map color, size, shape
+
+* **coordinate systems** - describe how the data are mapped
+
+* **facets** - breaking the data into subsets of small multiples
+
+* **themes** - the details of display like font size, color pallets, etc
+
+# Now for implementing the grammar with `ggplot2`
+
+Let's call the `tidyverse` which includes `ggplot2`.
+
+
+```{r}
+library(tidyverse)
+```
+
+We'll start with using the `diamonds` dataset that is built into `ggplot2`[^1].
+
+[^1]: Find more about this dataset using help("diamonds").
+
+```{r}
+head(diamonds)
+```
+
+This dataset contains information for a variety of diamonds which includes the 5 C's and additional geometries.[^2]
+
+[^2]: See more [about the five cees](https://www.portfoliooffinediamonds.com/Blog/March-2015/The-5-Cs-of-a-diamond)
+
+# Our First Example
+
+## Data
+Start with the data:
+```{r}
+ggplot()
+```
+
+## Aesthetics
+
+Note that we can pipe (`%>%`) into `ggplot2`. This can be handy when we need to do some data wrangling/ munging before we graph.
+
+```{r}
+diamonds %>% 
+  ggplot( data = , aes(x = , y = ))
+```
+
+_Aside_
+
+Note that we can specify `aes` outside of the ggplot2 object with something like
+
+```{r}
+ggplot(mtcars)+
+  aes(x = mpg, y = cyl)
+```
+
+
+## Layers
+
+### Geoms
+
+Layers are the `geoms` and `stats` to which we can map out aesthetics. There are tons of options of which we cannot cover in this overview. See [geoms](https://ggplot2.tidyverse.org/reference/#section-layer-geoms) and [stats](https://ggplot2.tidyverse.org/reference/#section-layer-stats) for more details.
+
+Let's make an x-y scatterplot with `geom_point`. Note that to add a component to a `ggplot2` item we use the `+` operator. There is a long history about why this is the case but it is important to remember.
+
+```{r}
+diamonds %>% 
+  ggplot( data = , aes(x = , y = ))+
+  geom_
+
+```
+
+And let's change the transparency on the points given that we have a lot of overlap. This will help us see the density of our data.
+
+```{r}
+
+
+```
+
+### Stats
+
+Now let's add a linear regression line to the graph. For simplicity as well, let's save it to an object called `p`. We can continue to add components to `p` without having to rewrite our code each time. This is a very handy feature that separates `ggplot2` from the base plotting tools.
+
+```{r}
+
+```
+
+
+## Scales
+
+`scale` can help us to change the scales of our axes. Using these features we don't have to change our data before plotting it. This is very nice when dealing with log scales or percents.
+
+Let's make the x and y axes on the log scale.
+
+```{r}
+p+
+  scale_
+```
+
+
+## Facets
+
+Now we add facets to our data. Facets create the "small multiple"[^3]
+
+[^3]: See this [link](https://en.wikipedia.org/wiki/Small_multiple) for more details. We can use the `fact_` to add these facets.
+
+```{r}
+
+```
+
+## Theme Elements
+
+First we need to add titles to our graph. We can do this with the `labs` function within `ggplot2`
+
+```{r}
+
+```
+
+
+There are several built in "themes" that can be used to control some of the other graph details (background colours, grids, line colours, etc). We can add the defaults using `theme_`
+
+```{r}
+
+```
+
+Additionally, others have made themes for us to use. For example `ggthemes` has many familiar templates. Additionally, [`papaja`]() even has an `theme_apa` to make APA compliant graphs.
+
+```{r}
+library(papaja)
+
+```
+
+
+Or we can manipulate the theme directly through `theme`.
+
+```{r}
+
+```
+
+
+## And We Can Keep Iterating!
+
+Now we can add another aesthetic element, colouring by a feature of our dataset and everything works!
+
+```{r}
+
+```
+
+
+## Saving
+
+`ggsave` can be used to save the `ggplot2` object.
+
+```{r}
+
+```
+
+# A Second Examples
+
+Let's do some additional analysis with our General Social Survey Data Set.
+
+```{r}
+library(haven)
+url <- "http://users.wfu.edu/dewittme/data/sample/GSS2016.sav"
+
+# Read Raw Data
+raw_data <-read_spss(url)
+```
+
+I want to subset the data
+
+```{r}
+library(labelled)
+my_subset <- raw_data %>% 
+  select(MAR1, AGE, WORKHARD, YEAR) %>%
+  mutate_at(vars(MAR1, WORKHARD), labelled::to_factor)
+
+
+```
+
+Let's Visualise a few things in our data
+
+```{r}
+(p1 <- my_subset %>% 
+  ggplot(aes(MAR1))+
+  geom_bar(fill = "#9E7E38")+
+  labs(
+    title = "Marital Status for Person 1",
+    caption = "Data: General Social Survey",
+    x = NULL
+  )+
+  theme_minimal())
+```
+
+Now let's look at data groups
+
+```{r}
+(p2 <- my_subset %>% 
+  mutate(WORKHARD_num = as.numeric(WORKHARD)) %>% 
+  ggplot(aes(MAR1, WORKHARD_num))+
+  stat_summary(fun.data = "mean_cl_boot")+
+  labs(
+    title = "Mean Response for Working Hard",
+    subtitle = "With Boostrapped CIs",
+    caption = "Data: GSS",
+    x = NULL,
+    y = "Opinion of Hard Work (1-5)"
+  )+
+  theme_minimal())
+```
+
+Now we can put these plots together using `cowplot`
+
+```{r}
+library(cowplot)
+
+plot_grid(p1, p2, labels = c("A", "B"), nrow = 2)
+
+```
+
+Or if you wanted to get more fancy
+
+```{r}
+ggdraw() +
+  draw_plot(p1 + 
+              theme(legend.justification = "bottom"),
+            0, 0, 1, 1) +
+  draw_plot(p2  + theme(legend.justification = "top"),
+            0.4, 0.52, 0.6, 0.4)
+```
+
+There is much more documentation on this package [here](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html)
